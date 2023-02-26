@@ -47,6 +47,10 @@ class ShadowApplicationPlugin implements Plugin<Project> {
     protected void configureJarMainClass(Project project) {
         def classNameProvider = javaApplication.mainClass
         jar.configure { jar ->
+            final def overrideMainClass = jar.manifest.attributes.get('Main-Class')
+            if (overrideMainClass != null) {
+                classNameProvider = overrideMainClass
+            }
             jar.inputs.property('mainClassName', classNameProvider)
             jar.doFirst {
                 manifest.attributes 'Main-Class': classNameProvider.get()

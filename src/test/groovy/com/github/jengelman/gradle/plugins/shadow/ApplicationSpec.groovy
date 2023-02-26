@@ -149,6 +149,74 @@ class ApplicationSpec extends PluginSpecification {
         jar?.close()
     }
 
+    def 'integration with application plugin and overriding Main-Class'() {
+        given:
+        repo.module('shadow', 'a', '1.0')
+                .insertFile('a.properties', 'a')
+                .insertFile('a2.properties', 'a2')
+                .publish()
+
+        file('src/main/java/myapp/Main.java') << """
+            package myapp;
+            public class Main {
+               public static void main(String[] args) {
+                   System.out.println("TestApp: Hello World! (" + args[0] + ")");
+               }
+            }
+        """.stripIndent()
+
+        file('src/main/java/your/Main.java') << """
+            package your;
+            public class Main {
+               public static void main(String[] args) {
+                   System.out.println("TestApp: from your.Main! (" + args[0] + ")");
+               }
+            }
+        """.stripIndent()
+
+        buildFile << """
+            apply plugin: 'application'
+
+            mainClassName = 'myapp.Main'
+            
+            dependencies {
+               implementation 'shadow:a:1.0'
+            }
+            
+            shadowJar {
+                manifest.attributes 'Main-Class': 'your.Main'
+            }
+            
+            runShadow {
+               args 'foo'
+            }
+        """.stripIndent()
+
+        settingsFile << "rootProject.name = 'myapp'"
+
+        when:
+        BuildResult result = run('runShadow', '--stacktrace')
+
+        then: 'tests that shadowJar executed and exited'
+        assert result.output.contains('TestApp: from your.Main! (foo)')
+
+        and: 'Check that the proper jar file was installed'
+        File installedJar = getFile('build/install/myapp-shadow/lib/myapp-1.0-all.jar')
+        assert installedJar.exists()
+
+        and: 'And that jar file as the correct files in it'
+        contains(installedJar, ['a.properties', 'a2.properties', 'myapp/Main.class'])
+        contains(installedJar, ['a.properties', 'a2.properties', 'your/Main.class'])
+
+        and: 'Check the manifest attributes in the jar file are correct'
+        JarFile jar = new JarFile(installedJar)
+        Attributes attributes = jar.manifest.mainAttributes
+        assert attributes.getValue('Main-Class') == 'your.Main'
+
+        cleanup:
+        jar?.close()
+    }
+
     @Issue('SHADOW-89')
     def 'shadow application distributions should use shadow jar'() {
         given:
