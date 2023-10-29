@@ -1,26 +1,18 @@
 apply plugin: "com.gradle.plugin-publish"
 
-group = 'com.github.johnrengelman'
-
-if (System.env.CIRCLE_TAG && System.env.CIRCLE_TAG =~  /^\d\.\d\.\d$/) {
-    version = System.env.CIRCLE_TAG
-} else {
-    version = file('src/main/resources/shadow-version.txt').text.trim()
-    if (!version.endsWith("-SNAPSHOT")) {
-        version = version + "-SNAPSHOT"
-    }
-}
+group = "io.github.goooler"
+version = "8.1.2"
 
 gradlePlugin {
-    website = 'https://github.com/johnrengelman/shadow'
-    vcsUrl = 'https://github.com/johnrengelman/shadow'
+    website = 'https://github.com/Goooler/shadow'
+    vcsUrl = 'https://github.com/Goooler/shadow'
 
     plugins {
         shadowPlugin {
-            id = 'com.github.johnrengelman.shadow'
+            id = 'io.github.goooler.shadow'
             implementationClass = 'com.github.jengelman.gradle.plugins.shadow.ShadowPlugin'
             displayName = 'Shadow Plugin'
-            description = "Gradle plugin to create fat/uber JARs, apply file transforms, and relocate packages for applications and libraries. Gradle version of Maven's Shade plugin."
+            description = "A fork of https://github.com/johnrengelman/shadow"
             tags.set(['onejar', 'shade', 'fatjar', 'uberjar'])
         }
     }
