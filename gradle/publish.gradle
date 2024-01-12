@@ -19,11 +19,6 @@ gradlePlugin {
     }
 }
 
-mavenPublishing {
-    publishToMavenCentral('S01')
-    signAllPublications()
-}
-
 tasks.named('publishPlugins') {
     notCompatibleWithConfigurationCache("https://github.com/gradle/gradle/issues/21283")
 }
