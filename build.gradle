@@ -5,7 +5,6 @@ plugins {
     id 'groovy'
     id 'project-report'
     id 'idea'
-    id 'signing'
     id 'java-gradle-plugin'
     id 'com.gradle.plugin-publish' version '1.2.1'
     id 'org.ajoberstar.git-publish' version '4.2.2'
