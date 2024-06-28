@@ -97,12 +97,6 @@ class PublishingSpec extends PluginSpecification {
                shadow 'shadow:b:1.0'
             }
             
-            shadowJar {
-               archiveClassifier = 'my-classifier'
-               archiveExtension = 'my-ext'
-               archiveBaseName = 'maven-all'
-            }
-            
             publishing {
                publications {
                    shadow(MavenPublication) { publication ->
@@ -115,6 +109,12 @@ class PublishingSpec extends PluginSpecification {
                        url "${publishingRepo.uri}"
                    }
                }
+            }
+            
+            shadowJar {
+               archiveClassifier = 'my-classifier'
+               archiveExtension = 'my-ext'
+               archiveBaseName = 'maven-all'
             }
         """.stripIndent()
 
